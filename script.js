@@ -1,234 +1,98 @@
-// Global variables
-let currentUser = null
-
-// DOM Content Loaded
+// MindCare Enterprise - Dynamic Logic
 document.addEventListener("DOMContentLoaded", () => {
-  initializeApp()
-  animateStats()
-  initializeNavigation()
-})
+    initHeroParticles();
+    initNavbarScroll();
+});
 
-// Initialize Application
-function initializeApp() {
-  // Check if user has completed a session
-  const user = localStorage.getItem("currentUser")
-  if (user) {
-    currentUser = JSON.parse(user)
-    updateNavigation()
-  }
+// --- Hero Particles Animation ---
+function initHeroParticles() {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
 
-  // Initialize animations
-  initializeAnimations()
-}
-
-// Navigation functionality
-function initializeNavigation() {
-  const hamburger = document.querySelector(".hamburger")
-  const navMenu = document.querySelector(".nav-menu")
-
-  if (hamburger && navMenu) {
-    hamburger.addEventListener("click", () => {
-      navMenu.classList.toggle("active")
-      hamburger.classList.toggle("active")
-    })
-  }
-}
-
-// Update navigation based on user status
-function updateNavigation() {
-  const loginBtn = document.querySelector(".login-btn")
-  if (loginBtn && currentUser) {
-    loginBtn.textContent = `Welcome, ${currentUser.firstName}`
-    loginBtn.href = "counseling.html"
-  }
-}
-
-// Animate statistics counters
-function animateStats() {
-  const statNumbers = document.querySelectorAll(".stat-number")
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const target = Number.parseInt(entry.target.dataset.target)
-        animateCounter(entry.target, target)
-        observer.unobserve(entry.target)
-      }
-    })
-  })
-
-  statNumbers.forEach((stat) => {
-    observer.observe(stat)
-  })
-}
-
-// Counter animation function
-function animateCounter(element, target) {
-  let current = 0
-  const increment = target / 100
-  const timer = setInterval(() => {
-    current += increment
-    if (current >= target) {
-      current = target
-      clearInterval(timer)
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
-    element.textContent = Math.floor(current).toLocaleString()
-  }, 20)
-}
 
-// Initialize scroll animations
-function initializeAnimations() {
-  const animatedElements = document.querySelectorAll(".feature-card, .team-member, .value-item")
+    window.addEventListener('resize', resize);
+    resize();
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("fade-in")
-          observer.unobserve(entry.target)
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = (Math.random() - 0.5) * 0.5;
+            this.speedY = (Math.random() - 0.5) * 0.5;
+            this.opacity = Math.random() * 0.5 + 0.2;
         }
-      })
-    },
-    {
-      threshold: 0.1,
-    },
-  )
 
-  animatedElements.forEach((element) => {
-    observer.observe(element)
-  })
-}
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
 
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-  anchor.addEventListener("click", function (e) {
-    e.preventDefault()
-    const target = document.querySelector(this.getAttribute("href"))
-    if (target) {
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      })
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+
+        draw() {
+            ctx.fillStyle = `rgba(0, 102, 255, ${this.opacity})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
-  })
-})
 
-// Contact form handling
-document.addEventListener("DOMContentLoaded", () => {
-  const contactForm = document.getElementById("contactForm")
-  if (contactForm) {
-    contactForm.addEventListener("submit", handleContactForm)
-  }
-})
-
-async function handleContactForm(e) {
-  e.preventDefault()
-
-  const formData = new FormData(e.target)
-  const contactData = {
-    name: formData.get("name"),
-    email: formData.get("email"),
-    message: formData.get("message"),
-  }
-
-  try {
-    const response = await fetch("/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(contactData),
-    })
-
-    if (response.ok) {
-      showNotification("Thank you for your message! We'll get back to you soon.", "success")
-      e.target.reset()
-    } else {
-      throw new Error("Failed to send message")
+    for (let i = 0; i < 100; i++) {
+        particles.push(new Particle());
     }
-  } catch (error) {
-    showNotification("Sorry, there was an error sending your message. Please try again.", "error")
-  }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+
+        // Draw connections
+        ctx.strokeStyle = 'rgba(0, 102, 255, 0.05)';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
 }
 
-// Notification system
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div")
-  notification.className = `notification notification-${type}`
-  notification.innerHTML = `
-    <div class="notification-content">
-      <i class="fas ${getNotificationIcon(type)}"></i>
-      <span>${message}</span>
-      <button onclick="this.parentElement.parentElement.remove()" class="notification-close">×</button>
-    </div>
-  `
-
-  // Add notification styles
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10000;
-    background: ${getNotificationColor(type)};
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    max-width: 400px;
-  `
-
-  notification.querySelector(".notification-content").style.cssText = `
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  `
-
-  notification.querySelector(".notification-close").style.cssText = `
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
-    margin-left: auto;
-  `
-
-  document.body.appendChild(notification)
-
-  setTimeout(() => {
-    notification.style.transform = "translateX(0)"
-  }, 100)
-
-  setTimeout(() => {
-    notification.style.transform = "translateX(100%)"
-    setTimeout(() => notification.remove(), 300)
-  }, 5000)
-}
-
-function getNotificationIcon(type) {
-  switch (type) {
-    case "success":
-      return "fa-check-circle"
-    case "error":
-      return "fa-exclamation-circle"
-    case "warning":
-      return "fa-exclamation-triangle"
-    default:
-      return "fa-info-circle"
-  }
-}
-
-function getNotificationColor(type) {
-  switch (type) {
-    case "success":
-      return "#22c55e"
-    case "error":
-      return "#ef4444"
-    case "warning":
-      return "#f97316"
-    default:
-      return "#3b82f6"
-  }
+// --- Navbar Scroll Effect ---
+function initNavbarScroll() {
+    const nav = document.querySelector('.navbar-corp');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            nav.style.padding = '0.75rem 0';
+            nav.style.background = 'rgba(255, 255, 255, 0.95)';
+            nav.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.05)';
+        } else {
+            nav.style.padding = '1.25rem 0';
+            nav.style.background = 'rgba(255, 255, 255, 0.8)';
+            nav.style.boxShadow = 'none';
+        }
+    });
 }
