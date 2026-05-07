@@ -3,319 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Counseling - MindCare</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>AI Mental Health Assessment | MindCare Enterprise</title>
+    <link rel="stylesheet" href="home.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Specialized styles for Counseling Page */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-soft);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .assessment-card {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .assessment-card.active {
+            display: block;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-grey);
+            border-radius: 10px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--brand-blue), var(--brand-indigo));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .chat-window {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-soft);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: var(--surface-grey);
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1.25rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .message-ai {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-dark);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background: var(--brand-blue);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem;
+            background: white;
+            display: flex;
+            gap: 1rem;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--brand-blue);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
+<body style="background: var(--surface-grey);">
+    <nav class="navbar-corp">
+        <div class="container nav-content">
+            <a href="index.html" class="logo-corp">
                 <i class="fas fa-brain"></i>
-                <span>MindCare</span>
+                <span>MindCare AI</span>
+            </a>
+            <div class="nav-links-corp">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="counseling.html" class="btn-corp btn-primary-corp">Support</a>
             </div>
-            <ul class="nav-menu">
-                <li><a href="/" class="nav-link">Home</a></li>
-                <li><a href="/counseling.html" class="nav-link active">Counseling</a></li>
-                <li><a href="/about.html" class="nav-link">About Us</a></li>
-            </ul>
         </div>
     </nav>
 
-    <div class="counseling-container">
-        <!-- User Info Collection Phase -->
-        <div id="userInfoPhase" class="user-info-phase">
-            <div class="info-header">
-                <h2>Welcome to MindCare</h2>
-                <p>Before we begin your mental health assessment, please provide some basic information to personalize your experience.</p>
-            </div>
+    <main class="container" style="padding-top: 140px; padding-bottom: 80px; max-width: 900px;">
+        
+        <!-- Phase 1: User Onboarding -->
+        <div id="userInfoPhase" class="glass-panel active">
+            <span class="badge-corp">Step 01</span>
+            <h2 class="section-h2-corp" style="text-align: left;">Welcome to Professional Support</h2>
+            <p class="hero-p-corp">Please provide your details to begin the diagnostic assessment.</p>
             
-            <div class="info-card">
-                <form id="userInfoForm" class="user-info-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" name="firstName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" name="lastName" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="age">Age</label>
-                            <input type="number" id="age" name="age" min="18" max="60" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <select id="gender" name="gender" required>
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                                <option value="prefer-not-to-say">Prefer not to say</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="department">Department</label>
-                        <select id="department" name="department" required>
-                            <option value="">Select Department</option>
-                            <option value="IT">Information Technology</option>
-                            <option value="HR">Human Resources</option>
-                            <option value="Finance">Finance</option>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Operations">Operations</option>
-                            <option value="Sales">Sales</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reportTo">Send Report To</label>
-                        <select id="reportTo" name="reportTo" required>
-                            <option value="">Select Recipient</option>
-                            <option value="hr">HR Department</option>
-                            <option value="manager">Department Manager</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-full">
-                        <i class="fas fa-arrow-right"></i>
-                        Continue to Assessment
-                    </button>
-                </form>
-            </div>
+            <form id="userInfoForm" style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">First Name</label>
+                    <input type="text" id="firstName" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Last Name</label>
+                    <input type="text" id="lastName" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Corporate Email</label>
+                    <input type="email" id="email" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Department</label>
+                    <select id="department" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                        <option value="IT">Engineering / IT</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="Sales">Sales & Marketing</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Operations">Operations</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Report Recipient</label>
+                    <select id="reportTo" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-soft);">
+                        <option value="hr">HR Department</option>
+                        <option value="manager">Direct Manager</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-corp btn-primary-corp" style="grid-column: span 2; justify-content: center; padding: 1rem;">
+                    Begin Assessment <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
         </div>
 
-        <!-- Assessment Phase -->
-        <div id="assessmentPhase" class="assessment-phase" style="display: none;">
-            <div class="assessment-header">
-                <h2>Mental Health Assessment</h2>
-                <p>Please answer the following questions honestly. This assessment will help us understand your current mental state.</p>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <span class="progress-text" id="progressText">Question 1 of 21</span>
+        <!-- Phase 2: DASS-21 Assessment -->
+        <div id="assessmentPhase" class="glass-panel" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge-corp">Assessment Phase</span>
+                <span id="questionCounter" style="font-weight: 700; color: var(--brand-blue);">1 / 21</span>
             </div>
+            <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
             
-            <div class="question-card" id="questionCard">
-                <div class="question-content">
-                    <h3 id="questionText">Loading question...</h3>
-                    <div class="answer-options">
-                        <label class="answer-option">
-                            <input type="radio" name="answer" value="0">
-                            <span class="option-text">🟢 Not at all true for me this week</span>
-                            <span class="option-value">0</span>
-                        </label>
-                        <label class="answer-option">
-                            <input type="radio" name="answer" value="1">
-                            <span class="option-text">🟡 Somewhat true at times this week</span>
-                            <span class="option-value">1</span>
-                        </label>
-                        <label class="answer-option">
-                            <input type="radio" name="answer" value="2">
-                            <span class="option-text">🟠 Mostly true for me this week</span>
-                            <span class="option-value">2</span>
-                        </label>
-                        <label class="answer-option">
-                            <input type="radio" name="answer" value="3">
-                            <span class="option-text">🔴 Very true for me most of the week</span>
-                            <span class="option-value">3</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="question-actions">
-                    <button id="prevBtn" class="btn btn-secondary" onclick="previousQuestion()" disabled>
-                        <i class="fas fa-arrow-left"></i>
-                        Previous
-                    </button>
-                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>
-                        Next
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
+            <div id="questionArea" style="min-height: 200px;">
+                <h3 id="questionText" class="section-h2-corp" style="text-align: left; font-size: 1.8rem; margin-bottom: 2rem;">Loading question...</h3>
+                <div id="optionsArea" style="display: grid; gap: 1rem;">
+                    <!-- Options injected by JS -->
                 </div>
             </div>
         </div>
 
-        <!-- Chat Phase -->
-        <div id="chatPhase" class="chat-phase" style="display: none;">
-            <div class="chat-container">
-                <div class="chat-header">
-                    <div class="chat-info">
-                        <div class="counselor-avatar">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="counselor-details">
-                            <h3>AI Counselor</h3>
-                            <span class="status online">Online</span>
-                        </div>
-                    </div>
-                    <div class="chat-actions">
-                        <button class="btn btn-secondary btn-sm" onclick="exportChat()">
-                            <i class="fas fa-download"></i>
-                            Export
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="endSession()">
-                            <i class="fas fa-times"></i>
-                            End Session
-                        </button>
+        <!-- Phase 3: AI Counseling Session -->
+        <div id="chatPhase" class="glass-panel" style="display: none;">
+            <div style="margin-bottom: 2rem;">
+                <span class="badge-corp">Live AI Counseling</span>
+                <h2 class="section-h2-corp" style="text-align: left; margin-top: 0.5rem;">Interactive Session</h2>
+            </div>
+            
+            <div class="chat-window">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message message-ai">
+                        Hello. I've analyzed your DASS-21 results. How are you feeling today?
                     </div>
                 </div>
-                
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">
-                        <div class="message-avatar">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="message-content">
-                            <p>Hello! I'm your AI counselor. Based on your assessment, I'm here to provide personalized support and guidance. How are you feeling right now?</p>
-                            <span class="message-time">Just now</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="chat-input-container">
-                    <div class="chat-input">
-                        <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
-                        <button onclick="sendMessage()" class="send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    <div class="quick-responses">
-                        <button class="quick-response" onclick="sendQuickResponse('I feel anxious')">I feel anxious</button>
-                        <button class="quick-response" onclick="sendQuickResponse('I need help')">I need help</button>
-                        <button class="quick-response" onclick="sendQuickResponse('Tell me more')">Tell me more</button>
-                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Share your thoughts...">
+                    <button id="sendMessage" class="btn-corp btn-primary-corp"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
             
-            <div class="session-info">
-                <div class="info-card">
-                    <h4>Session Progress</h4>
-                    <div class="session-stats">
-                        <div class="stat">
-                            <span class="stat-label">Duration</span>
-                            <span class="stat-value" id="sessionDuration">00:00</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">Messages</span>
-                            <span class="stat-value" id="messageCount">1</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="info-card">
-                    <h4>Assessment Results</h4>
-                    <div id="assessmentResults">
-                        <div class="result-item">
-                            <span class="result-label">Depression:</span>
-                            <span class="result-value" id="depressionScore">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">Anxiety:</span>
-                            <span class="result-value" id="anxietyScore">-</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">Stress:</span>
-                            <span class="result-value" id="stressScore">-</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="info-card">
-                    <h4>Emergency Contacts</h4>
-                    <div class="emergency-contacts">
-                        <p><strong>Crisis Hotline:</strong> 988</p>
-                        <p><strong>Emergency:</strong> 9152987821</p>
-                        <button class="btn btn-danger btn-sm btn-full" onclick="emergencyContact()">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Emergency Help
-                        </button>
-                    </div>
-                </div>
+            <div style="margin-top: 2rem; text-align: center;">
+                <button id="endSession" class="btn-corp" style="color: var(--danger-color);">End Session & Generate Report</button>
             </div>
         </div>
 
-        <!-- Results Phase -->
-        <div id="resultsPhase" class="results-phase" style="display: none;">
-            <div class="results-container">
-                <div class="results-header">
-                    <h2>Your Mental Health Report</h2>
-                    <p>Based on your assessment and counseling session</p>
-                </div>
-                
-                <div class="results-content">
-                    <div class="results-scores">
-                        <div class="score-card depression">
-                            <div class="score-icon">
-                                <i class="fas fa-sad-tear"></i>
-                            </div>
-                            <div class="score-details">
-                                <h3>Depression</h3>
-                                <div class="score-value" id="finalDepressionScore">0</div>
-                                <div class="score-level" id="depressionLevel">Normal</div>
-                            </div>
-                        </div>
-                        
-                        <div class="score-card anxiety">
-                            <div class="score-icon">
-                                <i class="fas fa-heart-broken"></i>
-                            </div>
-                            <div class="score-details">
-                                <h3>Anxiety</h3>
-                                <div class="score-value" id="finalAnxietyScore">0</div>
-                                <div class="score-level" id="anxietyLevel">Normal</div>
-                            </div>
-                        </div>
-                        
-                        <div class="score-card stress">
-                            <div class="score-icon">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div class="score-details">
-                                <h3>Stress</h3>
-                                <div class="score-value" id="finalStressScore">0</div>
-                                <div class="score-level" id="stressLevel">Normal</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="recommendations">
-                        <h3>Personalized Recommendations</h3>
-                        <div id="recommendationsList">
-                            <!-- Recommendations will be populated by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <div class="results-actions">
-                        <button class="btn btn-primary" onclick="downloadReport()">
-                            <i class="fas fa-download"></i>
-                            Download Report
-                        </button>
-                        <button class="btn btn-success" onclick="startNewSession()">
-                            <i class="fas fa-refresh"></i>
-                            New Session
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </main>
 
     <script src="counseling.js"></script>
 </body>
